@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 
-
 import string
 
-alphabets = string.ascii_lowercase + string.ascii_uppercase + string.digits + " " + string.punctuation
-default_set = ["&",")",">","x","K","A","w","f","?","z","C"]
-
 class Enc(object):
-    def __init__(
-        self,
-        n=4,
-        enc_set=default_set
+    __alphabets = string.ascii_lowercase + string.ascii_uppercase + string.digits + " " + string.punctuation
+    __default_set = ["&",")",">","x","K","A","w","f","?","z","C"]
+    def __init__(self,
+        n=4, # encrypt number
+        enc_set=__default_set, # encrypt symbols
     ):
         if "-" in enc_set:
             print("enc set can't contain '-'")
-            self.enc_set = default_set
+            self.enc_set = self.__default_set
         else:
             self.enc_set = enc_set
         if n > 10:
@@ -46,9 +43,9 @@ class Enc(object):
     def encrypt(self,keyword):
         num_array = ""
         for i in range(len(keyword)):
-            tmp_num = alphabets.find(keyword[i])
+            tmp_num = self.__alphabets.find(keyword[i])
             tmp_num += 13
-            tmp_num = tmp_num % len(alphabets)
+            tmp_num = tmp_num % len(self.__alphabets)
             tmp_num = self.Base_10_to_n(tmp_num)
             tmp_num = str(tmp_num)
             tmp_num = tmp_num.zfill(3)
@@ -67,8 +64,8 @@ class Enc(object):
             tmp_num = int(key)
             tmp_num = self.Base_n_to_10(tmp_num)
             tmp_num -= 13
-            tmp_num += len(alphabets)
-            tmp_num = tmp_num % len(alphabets)
-            num_array += alphabets[tmp_num]
+            tmp_num += len(self.__alphabets)
+            tmp_num = tmp_num % len(self.__alphabets)
+            num_array += self.__alphabets[tmp_num]
         return num_array
     

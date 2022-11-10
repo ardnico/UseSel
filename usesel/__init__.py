@@ -1,4 +1,4 @@
-from .handler.usesel import usesel
+from . import usesel
 
 __name__ = 'UseSel'
 __author__ = 'Nico'
