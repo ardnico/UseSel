@@ -57,12 +57,12 @@ class handle_webdriver(object):
         if serch_key("chrome",self.config.browser):
             # Google Chrome
             if webdriver_major_version==4:
-                driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),**kwargs)
-            elif webdriver_major_version<4:
                 if webdriver_minor_version > 9:
                     driver = webdriver.Chrome(**kwargs)
                 else:
-                    driver = webdriver.Chrome(ChromeDriverManager().install(),**kwargs)
+                    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),**kwargs)
+            elif webdriver_major_version<4:
+                driver = webdriver.Chrome(ChromeDriverManager().install(),**kwargs)
             else:
                 self.write_log("Not Conpatible Selenium Version")
         elif serch_key("headless_chrome",self.config.browser):
@@ -84,34 +84,34 @@ class handle_webdriver(object):
             for i in range(int(len(kwargs)/2)):
                 fp.set_preference(kwargs[i*2],kwargs[i*2+1])
             if webdriver_major_version==4:
-                driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()),firefox_profile=fp,**kwargs)
-            elif webdriver_major_version<4:
                 if webdriver_minor_version > 9:
                     driver = webdriver.Firefox(**kwargs)
                 else:
-                    driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),firefox_profile=fp,**kwargs)
+                    driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()),firefox_profile=fp,**kwargs)
+            elif webdriver_major_version<4:
+                driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),firefox_profile=fp,**kwargs)
             else:
                 self.write_log("Not Conpatible Selenium Version")
         elif serch_key("edge",self.config.browser):
             # Edge
             if webdriver_major_version==4:
-                driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()),**kwargs)
-            elif webdriver_major_version<4:
                 if webdriver_minor_version > 9:
                     driver = webdriver.Edge(**kwargs)
                 else:
-                    driver = webdriver.Edge(EdgeChromiumDriverManager().install(),**kwargs)
+                    driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()),**kwargs)
+            elif webdriver_major_version<4:
+                driver = webdriver.Edge(EdgeChromiumDriverManager().install(),**kwargs)
             else:
                 self.write_log("Not Conpatible Selenium Version")
         elif serch_key("ie",self.config.browser):
             # IE
             if webdriver_major_version==4:
-                driver = webdriver.Ie(service=IEService(IEDriverManager().install()),**kwargs)
-            elif webdriver_major_version<4:
                 if webdriver_minor_version > 9:
                     driver = webdriver.Ie()
                 else:
-                    driver = webdriver.Ie(IEDriverManager().install(),**kwargs)
+                    driver = webdriver.Ie(service=IEService(IEDriverManager().install()),**kwargs)
+            elif webdriver_major_version<4:
+                driver = webdriver.Ie(IEDriverManager().install(),**kwargs)
             else:
                 self.write_log("Not Conpatible Selenium Version")
         else:
