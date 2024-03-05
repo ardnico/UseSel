@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='UseSel',
-    version='1.0.0',
+    version='1.1.0',
     author='Nico',
     author_email='leaf.sun2@gmail.com',
     description='For using selenium confortabley',
