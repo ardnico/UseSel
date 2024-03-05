@@ -3,8 +3,8 @@ from .handle_webdriver import handle_webdriver
 import glob
 import time
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from getpass import getpass
-
 
 
 class handle_webelement(handle_webdriver):
@@ -29,26 +29,25 @@ class handle_webelement(handle_webdriver):
             errornum += 1
             try:
                 if webdriver_major_version<4:
-                    if method == "class" or method == "class_name" or method == "cn":
+                    if method in ["class" ,"class_name","cn","classname"]:
                         reitem = driver.find_element_by_class_name(key)
                     elif method == "id":
                         reitem = driver.find_element_by_id(key)
                     elif method == "name":
                         reitem = driver.find_element_by_name(key)
-                    elif method == "link_text" or method == "link" or method == "lt":
+                    elif method in ["link_text", "link", "lt", "linktext"]:
                         reitem = driver.find_element_by_link_text(key)
                     elif method == "partial_link_text":
                         reitem = driver.find_element_by_partial_link_text(key)
-                    elif method == "tag_name" or method == "tag":
+                    elif method in ["tag_name", "tagname", "tag"]:
                         reitem = driver.find_element_by_tag_name(key)
                     elif method == "xpath":
                         reitem = driver.find_element_by_xpath(key)
-                    elif method == "css_selector" or method == "css" :
+                    elif method in [ "css_selector", "css_selecter", "css", "cssselector", "cssselecter"]:
                         reitem = driver.find_element_by_css_selector(key)
                     else:
                         self.write_log("no such elements")
                 else:
-                    from selenium.webdriver.common.by import By
                     if method == "class" or method == "class_name" or method == "cn":
                         reitem = driver.find_element(By.CLASS_NAME,key)
                     elif method == "id":

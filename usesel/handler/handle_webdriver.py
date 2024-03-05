@@ -1,24 +1,22 @@
 
 import re
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.firefox import GeckoDriverManager
-from webdriver_manager.core.utils import ChromeType
 from .._config import config
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.opera import OperaDriverManager
-from webdriver_manager.microsoft import IEDriverManager
+
+webdriver_minor_version = int(webdriver.__version__.split(".")[1])
+if webdriver_minor_version<10:
+    from webdriver_manager.firefox import GeckoDriverManager
+    from webdriver_manager.chrome import ChromeDriverManager
+    from webdriver_manager.microsoft import IEDriverManager
+    from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 webdriver_major_version = int(webdriver.__version__.split(".")[0])
 if webdriver_major_version>=4:
     from selenium.webdriver.chrome.service import Service as ChromeService
     from selenium.webdriver.firefox.service import Service as FirefoxService
-    from selenium.webdriver.chrome.service import Service as BraveService
-    from selenium.webdriver.chrome.service import Service as ChromiumService
     from selenium.webdriver.edge.service import Service as EdgeService
     from selenium.webdriver.ie.service import Service as IEService
-
 
 def serch_key(key,line):
     return re.search(key,line, flags=re.IGNORECASE)
@@ -56,13 +54,15 @@ class handle_webdriver(object):
             size (tuple, optional): browser size. Defaults to (700,700).
         """
         options = Options()
-        webdriver_major_version = int(webdriver.__version__.split(".")[0])
         if serch_key("chrome",self.config.browser):
             # Google Chrome
             if webdriver_major_version==4:
                 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),**kwargs)
             elif webdriver_major_version<4:
-                driver = webdriver.Chrome(ChromeDriverManager().install(),**kwargs)
+                if webdriver_minor_version > 9:
+                    driver = webdriver.Chrome(**kwargs)
+                else:
+                    driver = webdriver.Chrome(ChromeDriverManager().install(),**kwargs)
             else:
                 self.write_log("Not Conpatible Selenium Version")
         elif serch_key("headless_chrome",self.config.browser):
@@ -86,33 +86,21 @@ class handle_webdriver(object):
             if webdriver_major_version==4:
                 driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()),firefox_profile=fp,**kwargs)
             elif webdriver_major_version<4:
-                driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),firefox_profile=fp,**kwargs)
-            else:
-                self.write_log("Not Conpatible Selenium Version")
-        elif serch_key("brave",self.config.browser):
-            # Brave
-            if webdriver_major_version==4:
-                driver = webdriver.Chrome(service=BraveService(ChromeDriverManager(chrome_type=ChromeType.BRAVE).install()),**kwargs)
-            elif webdriver_major_version<4:
-                driver = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.BRAVE).install(),**kwargs)                
-            else:
-                self.write_log("Not Conpatible Selenium Version")
-        elif serch_key("chromium",self.config.browser):
-            # Chromium
-            if webdriver_major_version==4:
-                driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),**kwargs)
-            elif webdriver_major_version<4:
-                driver = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install(),**kwargs)
+                if webdriver_minor_version > 9:
+                    driver = webdriver.Firefox(**kwargs)
+                else:
+                    driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),firefox_profile=fp,**kwargs)
             else:
                 self.write_log("Not Conpatible Selenium Version")
         elif serch_key("edge",self.config.browser):
             # Edge
             if webdriver_major_version==4:
-                from webdriver_manager.microsoft import EdgeChromiumDriverManager
                 driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()),**kwargs)
             elif webdriver_major_version<4:
-                from webdriver_manager.microsoft import EdgeChromiumDriverManager
-                driver = webdriver.Edge(EdgeChromiumDriverManager().install(),**kwargs)
+                if webdriver_minor_version > 9:
+                    driver = webdriver.Edge(**kwargs)
+                else:
+                    driver = webdriver.Edge(EdgeChromiumDriverManager().install(),**kwargs)
             else:
                 self.write_log("Not Conpatible Selenium Version")
         elif serch_key("ie",self.config.browser):
@@ -120,18 +108,12 @@ class handle_webdriver(object):
             if webdriver_major_version==4:
                 driver = webdriver.Ie(service=IEService(IEDriverManager().install()),**kwargs)
             elif webdriver_major_version<4:
-                driver = webdriver.Ie(IEDriverManager().install(),**kwargs)
+                if webdriver_minor_version > 9:
+                    driver = webdriver.Ie()
+                else:
+                    driver = webdriver.Ie(IEDriverManager().install(),**kwargs)
             else:
                 self.write_log("Not Conpatible Selenium Version")
-        elif serch_key("opera",self.config.browser):
-            # Opera
-            try:
-                driver = webdriver.Opera(executable_path=OperaDriverManager().install(),**kwargs)
-            except:
-                options = webdriver.ChromeOptions()
-                options.add_argument('allow-elevated-browser')
-                options.binary_location = "C:\\Users\\USERNAME\\FOLDERLOCATION\\Opera\\VERSION\\opera.exe"
-                driver = webdriver.Opera(executable_path=OperaDriverManager().install(), options=options,**kwargs)
         else:
             self.write_log(f"Not Conpatible browser: {self.config.browser}")
             return
@@ -142,10 +124,22 @@ class handle_webdriver(object):
     def get_handle(
         self,
         driver = None,
-        num = -1,  #  number of WindowHandle
+        name = "", # title
     ):
         '''
         '''
-        if num < 0:
-            num = len(driver.window_handles) - 1 # latest handler
-        driver.switch_to_window(driver.window_handles[num])
+        if driver is None:
+            print("please specify the web driver")
+            raise Exception
+        if name == "":
+            driver.switch_to_window(driver.window_handles[-1])
+            return
+        
+        if driver.title == name:
+            return
+
+        for handle in driver.window_handles:
+            driver.switch_to_window(handle)
+            if driver.title == name:
+                return
+        
