@@ -4,7 +4,6 @@ import glob
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from getpass import getpass
 
 
 class handle_webelement(handle_webdriver):
@@ -122,7 +121,7 @@ class handle_webelement(handle_webdriver):
     def moveflame(
         self,
         driver = None,
-        iflames:list = [],
+        iflame = "",
         method = 'xpath'
     ):
         """_summary_
@@ -138,36 +137,24 @@ class handle_webelement(handle_webdriver):
             driver.switch_to.default_content()
         except:
             pass
-        for flame in iflames:
-            iframe = self.get_elem(
-                driver=driver,
-                key=flame,
-                method=method
-            )
-            driver.switch_to.frame(iframe)
+        driver.switch_to.frame(iflame)
 
     def login(
         self,
         driver,
         url,
         set_name,
-        id_path,
-        psw_path,
-        button_path,
-        check_path,
+        paths:list, # specify the xpath(idbox,passwordbox,button,check)
         method="xpath",
         **kwargs
     ):
-        tmp_id_data = self.config.id_data[set_name]
-        paths = [
-            id_path,
-            psw_path,
-            button_path,
-            check_path,
-        ]
+        if len(paths)!=4:
+            waiting = input("specify the xpath(idbox,passwordbox,button,check)")
+            raise Exception
+        id, psw = self.config.get_id(set_name)
         actions = [
-            f"send_keys:{tmp_id_data[0]}",
-            f"send_keys:{tmp_id_data[1]}",
+            f"send_keys:{id}",
+            f"send_keys:{psw}",
             "click",
             ""
         ]
