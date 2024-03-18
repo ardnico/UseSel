@@ -1,8 +1,25 @@
 
 from .encrypter import Enc
 import os
+import tkinter as tk
 from getpass import getpass
 from datetime import datetime as dt
+import tkinter as tk
+from tkinter import simpledialog
+
+def get_user_input():
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
+    # Get ID input
+    user_id = simpledialog.askstring("Input", "Enter your ID:")
+    if user_id is None:
+        return None  # User canceled input
+    # Get password input (masked)
+    user_password = simpledialog.askstring("Input", "Enter your password:", show="*")
+    if user_password is None:
+        return None  # User canceled input
+    return user_id, user_password
+
 
 class config:
     __enc = Enc()
@@ -24,7 +41,7 @@ class config:
     def get_date_str_ymdhms(self) -> str:    
         return dt.now().strftime('%Y/%m/%d %H:%M:%S')
     
-    def set_id(self,set_name) -> None:
+    def set_id(self,set_name,dialogmode=0) -> None:
         if len(set_name) == 0:
             print("please set the parameter: set_name")
             raise Exception
@@ -34,8 +51,11 @@ class config:
             os.remove(id_file)
         if os.path.exists(psw_file):
             os.remove(psw_file)
-        id = input("input ID:")
-        psw = getpass("input Password:")
+        if dialogmode == 0:
+            id = input("input ID:")
+            psw = getpass("input Password:")
+        else:
+            id,psw = get_user_input()
         tmp_id = self.__enc.encrypt(id)
         tmp_psw = self.__enc.encrypt(psw)
         with open(id_file,"w") as f:
@@ -43,7 +63,8 @@ class config:
         with open(psw_file,"w") as f:
             f.write(tmp_psw)
     
-    def get_id(self,set_name) -> str:
+
+    def get_id(self,set_name,dialogmode=0) -> str:
         id_path = fr"{self.id_data_path}\id_{set_name}.data"
         if os.path.exists(id_path):
             with open(id_path,"r") as f:
@@ -55,8 +76,8 @@ class config:
             tmp_psw = self.__enc.decrypt(tmp_psw)
             return tmp_id, tmp_psw
         else:
-            self.set_id(set_name)
-            self.get_id(set_name)
+            self.set_id(set_name,dialogmode)
+            self.get_id(set_name,dialogmode)
     
     def check_file(self,set_name) -> bool:
         id_file = fr"{self.id_data_path}\id_{set_name}.data"
