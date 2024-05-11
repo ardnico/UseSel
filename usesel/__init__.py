@@ -1,4 +1,4 @@
-from .usesel import usesel
+from .usesel import Usesel
 
 __name__ = 'UseSel'
 __author__ = 'Nico'

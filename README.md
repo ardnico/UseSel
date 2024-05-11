@@ -9,7 +9,6 @@ UseSel
 ## Requirement
 
 selenium
-webdriver_manager
 
 ## Usage
 

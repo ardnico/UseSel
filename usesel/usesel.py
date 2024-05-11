@@ -1,8 +1,5 @@
-from .handler.handle_webelement import handle_webelement
+from .handler.use_selenium import use_selenium
 
-class usesel(handle_webelement):
+class Usesel(use_selenium):
     def __init__(self,**kwargs) ->None:
         super().__init__(**kwargs)
-    
-        
-        

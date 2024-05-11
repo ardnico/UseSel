@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='UseSel',
-    version='1.1.0',
+    version='1.2.0',
     author='Nico',
     author_email='leaf.sun2@gmail.com',
     description='For using selenium confortabley',
@@ -32,4 +32,8 @@ setup(
         ]
     },
     python_requires='>=3.5',
+    
+    install_requires=[
+        "selenium>=4.10.0",
+    ],
 )
